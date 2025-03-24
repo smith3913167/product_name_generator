@@ -1,31 +1,45 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from gpt_generator import generate_product_name
 from dotenv import load_dotenv
 import os
-from gpt_generator import generate_product_name
 
-# .env 파일 로드 (OPENAI_API_KEY를 환경변수로 불러오기 위함)
+# 환경변수 로드
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # CORS 설정
 
 @app.route("/api/generate-name", methods=["POST"])
 def generate_name():
-    data = request.get_json()
-    keyword = data.get("keyword", "").strip()
-
-    if not keyword:
-        return jsonify({"result": "❗ 키워드를 입력해 주세요."})
-
     try:
-        result = generate_product_name(keyword)
-        return jsonify({"result": result})
-    except Exception as e:
-        print("GPT 오류:", e)
-        return jsonify({"result": "❌ GPT 상품명 생성 실패"})
+        data = request.get_json()
 
-# ✅ Render가 인식할 수 있도록 포트 바인딩 필수
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+        # 필수 키 확인
+        required_keys = ["keyword", "category", "monthly_search", "competition_score", "related_keywords"]
+        if not all(key in data for key in required_keys):
+            return jsonify({"error": "입력값 부족"}), 400
+
+        keyword = data["keyword"]
+        category = data["category"]
+        monthly_search = data["monthly_search"]
+        competition_score = data["competition_score"]
+        related_keywords = data["related_keywords"]
+
+        result = generate_product_name(
+            keyword=keyword,
+            category=category,
+            monthly_search=monthly_search,
+            competition_score=competition_score,
+            related_keywords=related_keywords
+        )
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": f"서버 오류: {str(e)}"}), 500
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))  # Render에서 포트를 잡아주기 위함
+    app.run(host="0.0.0.0", port=port, debug=True)
