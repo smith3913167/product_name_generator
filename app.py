@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 # app.py – GPT 상품명 생성 API 서버 (Flask)
 
 from flask import Flask, request, jsonify
