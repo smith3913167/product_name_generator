@@ -140,7 +140,7 @@
       // ✅ 실제 GPT API 연동
       try {
         gptDiv.innerHTML = "GPT 상품명 생성 중...";
-        const res = await fetch("https://YOUR_RENDER_URL/api/generate-name", {
+        const res = await fetch("https://YOUR_api_name.onrender.com/api/generate-name", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ keyword: input })
