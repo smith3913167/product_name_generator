@@ -22,4 +22,4 @@ def generate_product_name(keyword):
         return result
     except Exception as e:
         print(f"❌ GPT 생성 중 오류 발생: {e}")
-        return "GPT 생성 실패"
+        return "GPT 생성 실패"  # ✅ 문자열 리턴
