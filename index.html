@@ -102,7 +102,7 @@
       }
     };
 
-    function analyzeKeyword() {
+    async function analyzeKeyword() {
       const input = document.getElementById("keywordInput").value.trim();
       const statsDiv = document.getElementById("stats");
       const relatedDiv = document.getElementById("relatedKeywords");
@@ -137,15 +137,19 @@
       tableHTML += `</table>`;
       relatedDiv.innerHTML = tableHTML;
 
-      // GPT 스타일 이름 생성 예시
-      const suggestions = [
-        `${input} 프리미엄 접이식 체어 2024`,
-        `SNS 인기템 ${input} 감성 스타일`,
-        `최신형 ${input} 릴렉스 경량형`,
-        `베스트셀러 ${input} 캠핑 전문가용`
-      ];
-      const gptPick = suggestions[Math.floor(Math.random() * suggestions.length)];
-      gptDiv.innerHTML = `✨ <strong>GPT 추천 상품명:</strong> ${gptPick}`;
+      // ✅ 실제 GPT API 연동
+      try {
+        gptDiv.innerHTML = "GPT 상품명 생성 중...";
+        const res = await fetch("https://YOUR_RENDER_URL/api/generate-name", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ keyword: input })
+        });
+        const result = await res.json();
+        gptDiv.innerHTML = `✨ <strong>GPT 추천 상품명:</strong> ${result.result}`;
+      } catch (error) {
+        gptDiv.innerHTML = `❌ GPT 호출 실패: ${error.message}`;
+      }
     }
   </script>
 </body>
