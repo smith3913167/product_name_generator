@@ -1,10 +1,11 @@
-import openai
 import os
+import openai
 from dotenv import load_dotenv
 
-load_dotenv()  # .env 파일에서 API 키를 불러옴
+load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 def generate_product_name(keyword):
     try:
@@ -20,4 +21,5 @@ def generate_product_name(keyword):
         result = response.choices[0].message.content.strip()
         return result
     except Exception as e:
-        return f"GPT 생성 실패: {e}"
+        print(f"❌ GPT 생성 중 오류 발생: {e}")
+        return "GPT 생성 실패"
