@@ -18,26 +18,71 @@
     }
     p {
       font-size: 1.2em;
-      margin-top: 20px;
+      margin-top: 10px;
     }
-    a {
-      display: inline-block;
-      margin-top: 30px;
+    input {
+      width: 300px;
+      padding: 12px;
+      font-size: 1em;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 15px;
       padding: 12px 24px;
+      font-size: 1em;
       background-color: #1a73e8;
       color: white;
-      text-decoration: none;
+      border: none;
       border-radius: 8px;
+      cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    a:hover {
+    button:hover {
       background-color: #155ab6;
+    }
+    .result {
+      margin-top: 30px;
+      font-size: 1.3em;
+      color: #1a73e8;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>환영합니다! 👋</h1>
-  <p>이곳은 GPT를 활용한 <strong>AI 상품명 생성기</strong>입니다.</p>
-  <a href="https://github.com/smith3913167/product_name_generator" target="_blank">📂 GitHub 저장소 보기</a>
+  <p>GPT를 활용한 <strong>AI 상품명 생성기</strong></p>
+
+  <input type="text" id="keywordInput" placeholder="키워드를 입력하세요 (예: 캠핑의자, 경량...)" />
+  <br />
+  <button onclick="generateProductName()">상품명 생성하기</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function generateProductName() {
+      const input = document.getElementById("keywordInput").value.trim();
+      const result = document.getElementById("result");
+
+      if (!input) {
+        result.innerText = "❗ 키워드를 입력해 주세요.";
+        return;
+      }
+
+      // 단순 예시 로직 - 실제 API 연동 없이 랜덤 생성
+      const suffixes = [
+        "프리미엄 에디션",
+        "2024 최신형",
+        "AI 자동 추천 상품",
+        "감성 캠핑용",
+        "베스트셀러",
+        "SNS 인기템"
+      ];
+      const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+
+      result.innerText = `💡 ${input} ${randomSuffix}`;
+    }
+  </script>
 </body>
 </html>
