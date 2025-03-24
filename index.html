@@ -11,6 +11,7 @@
       text-align: center;
       padding: 100px 20px;
       color: #333;
+      transition: background-color 0.4s ease;
     }
     h1 {
       font-size: 2.5em;
@@ -48,6 +49,37 @@
       color: #1a73e8;
       font-weight: bold;
     }
+    .copy-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .theme-toggle {
+      margin-top: 30px;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .dark {
+      background: #121212;
+      color: #eee;
+    }
+    .dark .result {
+      color: #90caf9;
+    }
+    .dark button, .dark .copy-btn, .dark .theme-toggle {
+      background-color: #333;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -59,6 +91,10 @@
   <button onclick="generateProductName()">상품명 생성하기</button>
 
   <div class="result" id="result"></div>
+  <button class="copy-btn" onclick="copyResult()">📋 결과 복사</button>
+
+  <br />
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 테마 변경</button>
 
   <script>
     function generateProductName() {
@@ -70,7 +106,6 @@
         return;
       }
 
-      // 단순 예시 로직 - 실제 API 연동 없이 랜덤 생성
       const suffixes = [
         "프리미엄 에디션",
         "2024 최신형",
@@ -80,9 +115,32 @@
         "SNS 인기템"
       ];
       const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+      const fullResult = `💡 ${input} ${randomSuffix}`;
 
-      result.innerText = `💡 ${input} ${randomSuffix}`;
+      result.innerText = fullResult;
+      localStorage.setItem("lastResult", fullResult);
     }
+
+    function copyResult() {
+      const result = document.getElementById("result").innerText;
+      if (result) {
+        navigator.clipboard.writeText(result).then(() => {
+          alert("📋 결과가 복사되었습니다!");
+        });
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    // 페이지 로드 시 이전 결과 불러오기
+    window.onload = function () {
+      const saved = localStorage.getItem("lastResult");
+      if (saved) {
+        document.getElementById("result").innerText = saved;
+      }
+    };
   </script>
 </body>
 </html>
