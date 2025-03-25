@@ -34,7 +34,8 @@ def generate_name():
             related_keywords=related_keywords
         )
 
-        return jsonify(result)
+        # ✅ 여기서 key 이름을 "name"으로 변경
+        return jsonify({"name": result["generated_name"]})
 
     except Exception as e:
         return jsonify({"error": f"서버 오류: {str(e)}"}), 500
