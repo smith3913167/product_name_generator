@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
@@ -12,20 +13,30 @@ CORS(app)
 def generate_name():
     try:
         data = request.get_json()
+
         required_keys = ["keyword", "category", "monthly_search", "competition_score", "related_keywords"]
         if not all(key in data for key in required_keys):
             return jsonify({"error": "입력값 부족"}), 400
 
+        keyword = data["keyword"]
+        category = data["category"]
+        monthly_search = data["monthly_search"]
+        competition_score = data["competition_score"]
+        related_keywords = data["related_keywords"]
+
         result = generate_product_name(
-            keyword=data["keyword"],
-            category=data["category"],
-            monthly_search=data["monthly_search"],
-            competition_score=data["competition_score"],
-            related_keywords=data["related_keywords"]
+            keyword=keyword,
+            category=category,
+            monthly_search=monthly_search,
+            competition_score=competition_score,
+            related_keywords=related_keywords
         )
-        return jsonify(result)
+
+        # 🔥 result는 딕셔너리 {"generated_name": "추천상품명"} 형태
+        return jsonify({"name": result["generated_name"]})
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"서버 오류: {str(e)}"}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
