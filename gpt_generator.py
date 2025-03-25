@@ -1,41 +1,46 @@
-import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from gpt_generator import generate_product_name
 from dotenv import load_dotenv
-from openai import OpenAI
-import logging
+import os
 
-# .env에서 환경 변수 로드
+# 환경변수 로드
 load_dotenv()
 
-# OpenAI API 키 불러오기
-openai_api_key = os.getenv("OPENAI_API_KEY")
+app = Flask(__name__)
+CORS(app)  # CORS 설정
 
-# OpenAI 클라이언트 설정
-client = OpenAI(api_key=openai_api_key)
-
-# GPT를 활용한 상품명 생성 함수
-def generate_product_name(keyword, category, monthly_search, competition_score, related_keywords):
+@app.route("/api/generate-name", methods=["POST"])
+def generate_name():
     try:
-        prompt = (
-            f"당신은 스마트한 마케팅 전문가입니다. "
-            f"다음 정보를 바탕으로 매력적이고 클릭을 유도할 수 있는 상품명을 하나 추천해주세요:\n\n"
-            f"- 키워드: {keyword}\n"
-            f"- 카테고리: {category}\n"
-            f"- 최근 검색량: {monthly_search}\n"
-            f"- 경쟁 강도: {competition_score}\n"
-            f"- 관련 키워드: {', '.join(related_keywords)}\n\n"
-            f"✨ 추천 상품명:"
+        data = request.get_json()
+
+        # 필수 키 확인
+        required_keys = ["keyword", "category", "monthly_search", "competition_score", "related_keywords"]
+        if not all(key in data for key in required_keys):
+            return jsonify({"error": "입력값 부족"}), 400
+
+        keyword = data["keyword"]
+        category = data["category"]
+        monthly_search = data["monthly_search"]
+        competition_score = data["competition_score"]
+        related_keywords = data["related_keywords"]
+
+        result = generate_product_name(
+            keyword=keyword,
+            category=category,
+            monthly_search=monthly_search,
+            competition_score=competition_score,
+            related_keywords=related_keywords
         )
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=50,
-        )
-
-        product_name = response.choices[0].message.content.strip()
-        return {"generated_name": product_name}
+        # ✅ 여기서 key 이름을 "name"으로 변경
+        return jsonify({"name": result["generated_name"]})
 
     except Exception as e:
-        logging.error(f"GPT 상품명 생성 실패: {e}")
-        return {"generated_name": "GPT 생성 실패"}
+        return jsonify({"error": f"서버 오류: {str(e)}"}), 500
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))  # Render에서 포트를 잡아주기 위함
+    app.run(host="0.0.0.0", port=port, debug=True)
